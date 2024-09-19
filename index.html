@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Post Example</title>
+</head>
+<body>
+
+<h1>Submit Form</h1>
+
+<form id="myForm">
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="destinations">Destinations (JSON Format):</label><br>
+    <textarea id="destinations" name="destinations" rows="6" required>
+[
+    {"city": "Manaus", "date": "2024-09-18"},
+    {"city": "São Paulo", "date": "2024-09-19"},
+    {"city": "Vinhedo", "date": "2024-09-21"},
+    {"city": "Manaus", "date": "2024-09-23"}
+]
+    </textarea><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        // Get form values
+        const email = encodeURIComponent(document.getElementById("email").value);
+        const destinations = encodeURIComponent(document.getElementById("destinations").value);
+
+        // Prepare the POST request data
+        const formData = `entry.1177238082=${email}&entry.1250423410=${destinations}`;
+
+        // Send the POST request
+        fetch('https://docs.google.com/forms/u/0/d/e/1FAIpQLSdxUuwFkAscV4j83ajpdkfarfV5kO2LLRZWMGsCguH3UPzbQg/formResponse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Form submitted successfully!");
+            } else {
+                alert("Failed to submit the form.");
+            }
+        })
+        .catch(error => {
+            alert("Error: " + error.message);
+        });
+    });
+</script>
+
+</body>
+</html>
