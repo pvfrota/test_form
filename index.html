@@ -3,60 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Post Example</title>
+    <title>Submit Form</title>
+    <style>
+        /* Reset default margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Set background color and font */
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Style the form */
+        form {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Form hover and focus effects */
+        input[type="email"]:focus,
+        textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: -15px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* Add a responsive layout */
+        @media (max-width: 600px) {
+            form {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<h1>Submit Form</h1>
+    <div class="form-container">
+        <form id="myForm">
+            <h1>Submit Destinations</h1>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-<form id="myForm">
-    <label for="email">Email:</label><br>
-    <input type="email" id="email" name="email" required><br><br>
-
-    <label for="destinations">Destinations (JSON Format):</label><br>
-    <textarea id="destinations" name="destinations" rows="6" required>
+            <label for="destinations">Destinations (JSON Format):</label>
+            <textarea id="destinations" name="destinations" rows="6" required>
 [
     {"city": "Manaus", "date": "2024-09-18"},
     {"city": "São Paulo", "date": "2024-09-19"},
     {"city": "Vinhedo", "date": "2024-09-21"},
     {"city": "Manaus", "date": "2024-09-23"}
 ]
-    </textarea><br><br>
+            </textarea>
 
-    <button type="submit">Submit</button>
-</form>
+            <div class="note">Please make sure the data is in correct JSON format.</div>
 
-<script>
-    document.getElementById("myForm").addEventListener("submit", function(event) {
-        event.preventDefault();
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 
-        // Get form values
-        const email = encodeURIComponent(document.getElementById("email").value);
-        const destinations = encodeURIComponent(document.getElementById("destinations").value);
+    <script>
+        document.getElementById("myForm").addEventListener("submit", function(event) {
+            event.preventDefault();
 
-        // Prepare the POST request data
-        const formData = `entry.1177238082=${email}&entry.1250423410=${destinations}`;
+            // Get form values
+            const email = encodeURIComponent(document.getElementById("email").value);
+            const destinations = encodeURIComponent(document.getElementById("destinations").value);
 
-        // Send the POST request
-        fetch('https://docs.google.com/forms/u/0/d/e/1FAIpQLSdxUuwFkAscV4j83ajpdkfarfV5kO2LLRZWMGsCguH3UPzbQg/formResponse', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("Form submitted successfully!");
-            } else {
-                alert("Failed to submit the form.");
-            }
-        })
-        .catch(error => {
-            alert("Error: " + error.message);
+            // Prepare the POST request data
+            const formData = `entry.1177238082=${email}&entry.1250423410=${destinations}`;
+
+            // Send the POST request
+            fetch('https://docs.google.com/forms/u/0/d/e/1FAIpQLSdxUuwFkAscV4j83ajpdkfarfV5kO2LLRZWMGsCguH3UPzbQg/formResponse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Form submitted successfully!");
+                } else {
+                    alert("Failed to submit the form.");
+                }
+            })
+            .catch(error => {
+                alert("Error: " + error.message);
+            });
         });
-    });
-</script>
+    </script>
 
 </body>
 </html>
