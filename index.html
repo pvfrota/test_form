@@ -5,14 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Form</title>
     <style>
-        /* Reset default margin and padding */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Set background color and font */
         body {
             background-color: #f4f7f6;
             font-family: 'Arial', sans-serif;
@@ -22,7 +14,6 @@
             height: 100vh;
         }
 
-        /* Style the form */
         form {
             background-color: #ffffff;
             padding: 40px;
@@ -48,21 +39,17 @@
         }
 
         input[type="email"],
-        textarea {
+        input[type="text"],
+        input[type="date"] {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 14px;
-            color: #333;
         }
 
-        textarea {
-            resize: vertical;
-        }
-
-        button {
+        button, .add-city-btn {
             width: 100%;
             background-color: #4CAF50;
             color: white;
@@ -71,80 +58,123 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin-top: 10px;
             transition: background-color 0.3s ease;
         }
 
-        button:hover {
+        button:hover, .add-city-btn:hover {
             background-color: #45a049;
         }
 
-        /* Form hover and focus effects */
-        input[type="email"]:focus,
-        textarea:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-
-        .form-container {
+        .city-date-pair {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .note {
-            font-size: 12px;
-            color: #888;
-            margin-top: -15px;
+            justify-content: space-between;
             margin-bottom: 10px;
-            text-align: center;
         }
 
-        /* Add a responsive layout */
-        @media (max-width: 600px) {
-            form {
-                padding: 20px;
-            }
+        .city-date-pair input {
+            flex: 1;
+            margin-right: 10px;
+        }
 
-            h1 {
-                font-size: 20px;
-            }
+        .remove-city-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .remove-city-btn:hover {
+            background-color: #ff3333;
         }
     </style>
 </head>
 <body>
 
-    <div class="form-container">
-        <form id="myForm">
-            <h1>Submit Destinations</h1>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    <form id="myForm">
+        <h1>Submit Destinations</h1>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-            <label for="destinations">Destinations (JSON Format):</label>
-            <textarea id="destinations" name="destinations" rows="6" required>
-[
-    {"city": "Manaus", "date": "2024-09-18"},
-    {"city": "São Paulo", "date": "2024-09-19"},
-    {"city": "Vinhedo", "date": "2024-09-21"},
-    {"city": "Manaus", "date": "2024-09-23"}
-]
-            </textarea>
+        <div id="cityDateContainer">
+            <label>Destinations:</label>
+            <div class="city-date-pair">
+                <input type="text" name="city" placeholder="City" required>
+                <input type="date" name="date" required>
+            </div>
+        </div>
 
-            <div class="note">Please make sure the data is in correct JSON format.</div>
+        <button type="button" class="add-city-btn" onclick="addCityDate()">+ Add another city</button>
 
-            <button type="submit">Submit</button>
-        </form>
-    </div>
+        <button type="submit">Submit</button>
+    </form>
 
     <script>
+        function addCityDate() {
+            const container = document.getElementById("cityDateContainer");
+
+            // Create a new city-date pair div
+            const cityDatePair = document.createElement("div");
+            cityDatePair.className = "city-date-pair";
+
+            // Create input for city
+            const cityInput = document.createElement("input");
+            cityInput.type = "text";
+            cityInput.name = "city";
+            cityInput.placeholder = "City";
+            cityInput.required = true;
+
+            // Create input for date
+            const dateInput = document.createElement("input");
+            dateInput.type = "date";
+            dateInput.name = "date";
+            dateInput.required = true;
+
+            // Create remove button
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "remove-city-btn";
+            removeButton.innerText = "X";
+            removeButton.onclick = function () {
+                container.removeChild(cityDatePair)
+            };
+
+            // Append inputs and button to cityDatePair
+            cityDatePair.appendChild(cityInput);
+            cityDatePair.appendChild(dateInput);
+            cityDatePair.appendChild(removeButton);
+
+            // Append cityDatePair to the container
+            container.appendChild(cityDatePair);
+        }
+
         document.getElementById("myForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
-            // Get form values
+            // Get email value
             const email = encodeURIComponent(document.getElementById("email").value);
-            const destinations = encodeURIComponent(document.getElementById("destinations").value);
 
-            // Prepare the POST request data
-            const formData = `entry.1177238082=${email}&entry.1250423410=${destinations}`;
+            // Get city-date pairs
+            const cityDatePairs = [];
+            const cityInputs = document.querySelectorAll('input[name="city"]');
+            const dateInputs = document.querySelectorAll('input[name="date"]');
+
+            cityInputs.forEach((cityInput, index) => {
+                const city = cityInput.value;
+                const date = dateInputs[index].value;
+                if (city && date) {
+                    cityDatePairs.push({ city: city, date: date });
+                }
+            });
+
+            // Convert city-date pairs to JSON
+            const destinationsJson = JSON.stringify(cityDatePairs);
+            const encodedDestinations = encodeURIComponent(destinationsJson);
+
+            // Prepare form data for POST request
+            const formData = `entry.1177238082=${email}&entry.1250423410=${encodedDestinations}`;
 
             // Send the POST request
             fetch('https://docs.google.com/forms/u/0/d/e/1FAIpQLSdxUuwFkAscV4j83ajpdkfarfV5kO2LLRZWMGsCguH3UPzbQg/formResponse', {
